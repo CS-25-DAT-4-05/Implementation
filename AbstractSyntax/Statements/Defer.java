@@ -12,8 +12,8 @@ import Lib.Pair;
  */
 
 public class Defer implements Stmt {
-    ArrayList<Pair<String,SizeParam>> dim = new ArrayList<Pair<String,SizeParam>>();
-    Stmt stmt;
+    public ArrayList<Pair<String,SizeParam>> dim = new ArrayList<Pair<String,SizeParam>>();
+    public Stmt stmt;
     public Defer(ArrayList<Pair<String,SizeParam>> dim,Stmt stmt){
         for (Pair<String,SizeParam> pair : dim) {
             this.dim.add(pair);

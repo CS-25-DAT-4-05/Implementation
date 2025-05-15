@@ -7,7 +7,7 @@ package AbstractSyntax.Expressions;
  */
 
 public class Ident implements Expr {
-    String name;
+    public String name;
     public Ident(String name){
         this.name = name;
     }

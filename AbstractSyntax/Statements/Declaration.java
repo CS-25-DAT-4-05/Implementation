@@ -9,27 +9,14 @@ import AbstractSyntax.Expressions.Expr;
  */
 
 public class Declaration implements Stmt {
-    Type t;
-    String ident;
-    Expr expr;
-    Stmt stmt;
+    public Type t;
+    public String ident;
+    public Expr expr;
+    public Stmt stmt;
     public Declaration(Type t, String ident, Expr expr, Stmt stmt){
         this.t = t;
         this.ident = ident;
         this.expr = expr;
         this.stmt = stmt;
-    }
-
-    public Expr getExpr() {
-        return expr;
-    }
-    public String getIdent() {
-        return ident;
-    }
-    public Stmt getStmt() {
-        return stmt;
-    }
-    public Type getT() {
-        return t;
     }
 }

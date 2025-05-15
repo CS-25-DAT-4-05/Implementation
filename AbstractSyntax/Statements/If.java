@@ -9,9 +9,9 @@ import AbstractSyntax.Expressions.Expr;
  */
 
 public class If implements Stmt{
-    Stmt then;
-    Stmt els;
-    Expr cond;
+    public Stmt then;
+    public Stmt els;
+    public Expr cond;
     public If(Stmt then, Stmt els, Expr cond){
         this.then = then;
         this.els = els;

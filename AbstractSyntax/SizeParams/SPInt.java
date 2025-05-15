@@ -7,7 +7,7 @@ package AbstractSyntax.SizeParams;
  */
 
 public class SPInt implements SizeParam {
-    int value;
+    public int value;
     public SPInt(int value){
         this.value = value;
     }

@@ -9,12 +9,8 @@ import AbstractSyntax.Definitions.FuncDef;
  */
 
 public class Prog {
-    FuncDef func;
+    public FuncDef func;
     public Prog(FuncDef func){
         this.func = func;
-    }
-
-    public FuncDef getFuncDef(){
-        return func;
     }
 }

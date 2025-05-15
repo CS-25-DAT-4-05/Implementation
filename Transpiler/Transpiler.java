@@ -38,9 +38,9 @@ public class Transpiler {
             if(!(root instanceof Prog)){
                 throw new Exception("Incorrect root for abstract syntax tree");
             }
-            addPrototype(fWriter, root.getFuncDef());
+            addPrototype(fWriter, root.func);
             fWriter.write("\n");
-            transpileDef(fWriter, root.getFuncDef());
+            transpileDef(fWriter, root.func);
         } catch(Exception e){
 
         }
@@ -54,16 +54,16 @@ public class Transpiler {
                 fWriter.append("");
                 break;
             case Assign a:
-                ident = a.getIdent();
-                expr = transpileExpr( a.getExpr());
+                ident = a.ident;
+                expr = transpileExpr( a.expr);
                 fWriter.append(ident + " = " + expr + ";\n");
                 break;
             case Declaration d:
-                String type = boltToCudaTypeConverter(d.getT());
-                ident = d.getIdent();
-                expr = transpileExpr(d.getExpr());
+                String type = boltToCudaTypeConverter(d.t);
+                ident = d.ident;
+                expr = transpileExpr(d.expr);
                 fWriter.append(type + " " + ident + " = " + expr + ";\n");
-                transpileStmt(fWriter, d.getStmt());
+                transpileStmt(fWriter, d.stmt);
                 break;
             default:  
                 break;
@@ -73,11 +73,11 @@ public class Transpiler {
     static String transpileExpr(Expr e){
         switch (e) {
             case BinExpr be:
-                String e1 = transpileExpr(be.getLeft());
-                String e2 = transpileExpr(be.getRight());
-                return e1 +  getBinOp(be.getOp()) + e2;
+                String e1 = transpileExpr(be.left);
+                String e2 = transpileExpr(be.left);
+                return e1 +  getBinOp(be.op) + e2;
             case IntVal iv:
-                return "" + iv.getValue();    
+                return "" + iv.value;    
             default:
                 return "";
         }
@@ -86,23 +86,23 @@ public class Transpiler {
     static void transpileDef(FileWriter fileWriter,FuncDef f) throws Exception{
         printFunctionHeader(fileWriter, f);
         fileWriter.append("{\n");
-        transpileStmt(fileWriter, f.getBody());
-        String returnExpr = transpileExpr(f.getReturnExpr());
+        transpileStmt(fileWriter, f.funcBody);
+        String returnExpr = transpileExpr(f.returnExpr);
 
         fileWriter.append("return "+returnExpr + ";\n");
         fileWriter.append("}\n");
-        transpileDef(fileWriter, f.getNexFuncDef());
+        transpileDef(fileWriter, f.nextFunc);
     }
 
     
     //#### Auxiliary functions ########################################
     static void printFunctionHeader(FileWriter fWriter, FuncDef f) throws Exception{
-        String rtype = boltToCudaTypeConverter(f.getReturnType());
-        String procName = f.getProcName();
+        String rtype = boltToCudaTypeConverter(f.returnType);
+        String procName = f.procname;
         String paramters = "";
         StringBuilder sb = new StringBuilder();
-        if(f.getFormalParams() != null){
-            for (Pair<Type,String> p : f.getFormalParams()) {
+        if(f.formalParams != null){
+            for (Pair<Type,String> p : f.formalParams) {
                 if(!(sb.length() == 0)){
                     sb.append(',');
                 }
@@ -123,21 +123,21 @@ public class Transpiler {
             return;
         }
 
-        if(f.getProcName().equals("main")){
+        if(f.procname.equals("main")){
             hasMain = true;
-            addPrototype(fWriter,f.getNexFuncDef());
+            addPrototype(fWriter,f.nextFunc);
         }
         else{
             printFunctionHeader(fWriter, f);
             fWriter.append(";\n");
-            addPrototype(fWriter, f.getNexFuncDef());
+            addPrototype(fWriter, f.nextFunc);
         }
     }
 
     static String boltToCudaTypeConverter(Type t) throws Exception{
         switch (t) {
             case SimpleType st:
-                switch (st.getType()) {
+                switch (st.type) {
                     case INT:
                         return "int";
                     case BOOL:

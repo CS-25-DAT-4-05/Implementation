@@ -6,12 +6,9 @@ package AbstractSyntax.Expressions;
  * 
  */
 public class IntVal implements Expr {
-    int value;
+    public int value;
     public IntVal(int value){
         this.value = value;
     }
-    
-    public int getValue() {
-        return value;
-    }
+
 }

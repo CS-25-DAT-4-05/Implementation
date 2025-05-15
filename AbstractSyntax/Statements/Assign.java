@@ -8,18 +8,10 @@ import AbstractSyntax.Expressions.*;
  */
 
 public class Assign implements Stmt{
-    String ident;
-    Expr expr;
+    public String ident;
+    public Expr expr;
     public Assign(String ident, Expr expr){
         this.ident = ident;
         this.expr = expr;
-    }
-
-    public String getIdent() {
-        return ident;
-    }
-    
-    public Expr getExpr() {
-        return expr;
     }
 }

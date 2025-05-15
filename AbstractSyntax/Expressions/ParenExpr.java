@@ -7,7 +7,7 @@ package AbstractSyntax.Expressions;
  */
 
 public class ParenExpr implements Expr{
-    Expr expr;
+    public Expr expr;
     public ParenExpr(Expr expr){
         this.expr = expr;
     }

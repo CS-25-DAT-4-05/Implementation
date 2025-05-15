@@ -9,8 +9,8 @@ import AbstractSyntax.SizeParams.*;
  */
 
 public class TensorType implements Type {
-    SimpleType componentType;
-    ArrayList<SizeParam> dimensions = new ArrayList<SizeParam>();
+    public SimpleType componentType;
+    public ArrayList<SizeParam> dimensions = new ArrayList<SizeParam>();
     public TensorType(SimpleType compT, ArrayList<SizeParam> dim){
         for (SizeParam sizeParam : dim) {
             dimensions.add(sizeParam);

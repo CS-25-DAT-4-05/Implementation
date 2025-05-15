@@ -6,7 +6,7 @@ package AbstractSyntax.Expressions;
  * 
  */
 public class CharVal implements Expr {
-    char val;
+    public char val;
     public CharVal(char val){
         this.val = val;
     }

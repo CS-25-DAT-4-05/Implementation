@@ -7,7 +7,7 @@ package AbstractSyntax.SizeParams;
  */
 
 public class SPIdent implements SizeParam {
-    String ident;
+    public String ident;
     public SPIdent(String identifer){
         this.ident = identifer;
     }

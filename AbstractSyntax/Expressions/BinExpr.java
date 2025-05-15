@@ -6,8 +6,8 @@ package AbstractSyntax.Expressions;
  */
 
 public class BinExpr implements Expr{
-    Expr left,right;
-    Binoperator op;
+    public Expr left,right;
+    public Binoperator op;
 
     public BinExpr(Expr left, Expr right,Binoperator op){
         this.left = left;
@@ -15,15 +15,5 @@ public class BinExpr implements Expr{
         this.op = op;
     }
 
-    public Expr getLeft() {
-        return left;
-    }
 
-    public Expr getRight(){
-        return right;
-    }
-
-    public Binoperator getOp() {
-        return op;
-    }
 }

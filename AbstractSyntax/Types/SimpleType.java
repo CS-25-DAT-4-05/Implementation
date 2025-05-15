@@ -7,11 +7,8 @@ package AbstractSyntax.Types;
  */
 
 public class SimpleType implements Type {
-    SimpleTypesEnum type;
+    public SimpleTypesEnum type;
     public SimpleType(SimpleTypesEnum T){
         type = T;
-    }
-    public SimpleTypesEnum getType(){
-        return type;
     }
 }

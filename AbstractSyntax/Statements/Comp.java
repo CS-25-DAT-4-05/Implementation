@@ -7,8 +7,8 @@ package AbstractSyntax.Statements;
  */
 
 public class Comp implements Stmt{
-    Stmt stmt1;
-    Stmt stmt2;
+    public Stmt stmt1;
+    public Stmt stmt2;
     public Comp(Stmt stmt1, Stmt stmt2){
         this.stmt1 = stmt1;
         this.stmt2 = stmt2;

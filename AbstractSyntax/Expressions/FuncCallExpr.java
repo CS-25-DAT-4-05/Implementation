@@ -9,9 +9,9 @@ import java.util.HashMap;
  */
 
 public class FuncCallExpr implements Expr{
-    ArrayList<Expr> ActualParameters = new ArrayList<Expr>();
-    String name;
-    HashMap<String, String> gamma;
+    public ArrayList<Expr> ActualParameters = new ArrayList<Expr>();
+    public String name;
+    public HashMap<String, String> gamma;
 
     public FuncCallExpr(ArrayList<Expr> ActualParameters,String name){
         if(!(ActualParameters == null)){

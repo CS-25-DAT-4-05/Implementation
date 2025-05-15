@@ -6,8 +6,8 @@ package AbstractSyntax.Expressions;
  */
 import java.util.ArrayList;
 public class TensorAccessExpr implements Expr {
-    Expr listExpr;
-    ArrayList<Expr> indices = new ArrayList<Expr>();
+    public Expr listExpr;
+    public ArrayList<Expr> indices = new ArrayList<Expr>();
     public TensorAccessExpr(Expr listExpr,ArrayList<Expr> indices){
         for (Expr expr : indices) {
             this.indices.add(expr);

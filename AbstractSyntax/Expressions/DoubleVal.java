@@ -7,7 +7,7 @@ package AbstractSyntax.Expressions;
  */
 
 public class DoubleVal implements Expr {
-    double val;
+    public double val;
     public DoubleVal(double val){
         this.val = val;
     }

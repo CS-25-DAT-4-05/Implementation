@@ -9,7 +9,7 @@ import java.util.ArrayList;
  */
 
 public class TensorDefExpr implements Expr {
-    ArrayList<Expr> exprs = new ArrayList<Expr>();
+    public ArrayList<Expr> exprs = new ArrayList<Expr>();
 
     public TensorDefExpr(ArrayList<Expr> exprs){
         for (Expr expr : exprs) {

@@ -5,7 +5,7 @@ package AbstractSyntax.Expressions;
  * 
  */
 public class BoolVal implements Expr{
-    boolean value;
+    public boolean value;
     public BoolVal(boolean value){
         this.value = value;
     }
