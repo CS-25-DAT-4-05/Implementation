@@ -22,6 +22,8 @@ import java.util.HashMap;
 public class Transpiler {
     static boolean hasMain = false;
 
+    static HashMap<String,Defer> deferMap;
+
     public static void TranspileProg(String fileName, Prog root){
         //Initialization
         Ftable ftable = new Ftable();
@@ -42,7 +44,7 @@ public class Transpiler {
             fWriter.write("\n");
             transpileDef(fWriter, root.func);
         } catch(Exception e){
-
+            System.out.println(e.getMessage());
         }
 
     }
@@ -95,7 +97,7 @@ public class Transpiler {
         }
     } 
 
-    static String transpileExpr(Expr e){
+    static String transpileExpr(Expr e) throws Exception{
         switch (e) {
             case BinExpr be:
                 String e1 = transpileExpr(be.left);
@@ -116,7 +118,17 @@ public class Transpiler {
             case UnExpr ue:
                 return getUnOp(ue.op) + transpileExpr(ue.expr);
             case FuncCallExpr func:
-                return "";
+                String params = "";
+                StringBuilder sb = new StringBuilder();
+                if(func.ActualParameters != null){
+                    for (Expr exp : func.ActualParameters) {
+                        if(sb.length() != 0){
+                            sb.append(",");
+                        }
+                        sb.append(transpileExpr(exp));
+                    }
+                }
+                return func.name + "(" + params + ");\n";
             case TensorAccessExpr tae:
                 return "";
             case TensorDefExpr tde:
@@ -160,7 +172,6 @@ public class Transpiler {
     }
 
 
-
     static void addPrototype(FileWriter fWriter,FuncDef f) throws Exception{
         if(f == null){
             return;
@@ -193,30 +204,56 @@ public class Transpiler {
                         return "void";  
                 }
             case TensorType ct:
-                return "tensor"; //Needs to be changed
+                return "Tensor"; //Needs to be changed
             default:
                 throw new Exception("Unrecognized type");
         }
 
     }
 
-    static char getBinOp(Binoperator bin){
+    static String getBinOp(Binoperator bin) throws Exception{
         switch (bin) {
             case Binoperator.ADD:
-                return '+';    
+                return "+";
+            case Binoperator.MINUS:
+                return "-";
+            case Binoperator.TIMES:
+                return "*";
+            case Binoperator.MODULO:
+                return "%";
+            case Binoperator.EQUAL:
+                return "==";
+            case Binoperator.NEQUAL:
+                return "!=";
+            case Binoperator.DIV:
+                return "/";
+            case Binoperator.LEQ:
+                return "<=";
+            case Binoperator.LT:
+                return "<";
+            case Binoperator.GT:
+                return ">";
+            case Binoperator.GEQ:
+                return ">=";
+            case Binoperator.OR:
+                return "||";
+            case Binoperator.AND:
+                return "&&";
+            case Binoperator.ELMULT:
+                return "<<";    
             default:
-                return '?';
+                throw new Exception("invalid operator");
         }
     }
 
-    static char getUnOp(Unaryoperator op){
+    static char getUnOp(Unaryoperator op) throws Exception{
         switch (op) {
             case Unaryoperator.NOT:
                 return '!';
             case Unaryoperator.NEG:
                 return '-';
             default:
-                return '?';
+                throw new Exception("invalid operator");
         }
     }
     
