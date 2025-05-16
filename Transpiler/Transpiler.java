@@ -46,24 +46,49 @@ public class Transpiler {
         }
 
     }
+
     static void transpileStmt(FileWriter fWriter,Stmt s) throws Exception{
         String ident;
         String expr;
+        String cond;
         switch (s) {
             case null:
                 fWriter.append("");
                 break;
-            case Assign a:
-                ident = a.ident;
-                expr = transpileExpr( a.expr);
+            case Assign asgn:
+                ident = asgn.ident;
+                expr = transpileExpr( asgn.expr);
                 fWriter.append(ident + " = " + expr + ";\n");
                 break;
-            case Declaration d:
-                String type = boltToCudaTypeConverter(d.t);
-                ident = d.ident;
-                expr = transpileExpr(d.expr);
+            case Declaration dec:
+                String type = boltToCudaTypeConverter(dec.t);
+                ident = dec.ident;
+                expr = transpileExpr(dec.expr);
                 fWriter.append(type + " " + ident + " = " + expr + ";\n");
-                transpileStmt(fWriter, d.stmt);
+                transpileStmt(fWriter, dec.stmt);
+                break;
+            case Comp cmp:
+                transpileStmt(fWriter, cmp.stmt1);
+                transpileStmt(fWriter, cmp.stmt2);
+                break;
+            case If ife:
+                cond = transpileExpr(ife.cond);
+                fWriter.append("if(" + cond + "){\n");
+                transpileStmt(fWriter, ife.then);
+                fWriter.append("}\n");
+                if(ife.els != null){
+                    fWriter.append("else{\n");
+                    transpileStmt(fWriter, ife.els);
+                    fWriter.append("}\n");
+                }
+                break;
+            case While wh:
+                cond = transpileExpr(wh.cond);
+                fWriter.append("while()" + cond + "){\n");
+                transpileStmt(fWriter, wh.stmt);
+                fWriter.append("}\n");
+                break;
+            case Defer df: 
                 break;
             default:  
                 break;
@@ -77,7 +102,25 @@ public class Transpiler {
                 String e2 = transpileExpr(be.left);
                 return e1 +  getBinOp(be.op) + e2;
             case IntVal iv:
-                return "" + iv.value;    
+                return "" + iv.value;
+            case BoolVal bv:
+                return "" + bv.value;
+            case CharVal cv:
+                return "" + cv.val;
+            case DoubleVal dv:
+                return "" + dv.val;
+            case Ident id:
+                return id.name;
+            case ParenExpr pe:
+                return "("+ transpileExpr(pe.expr)+")";
+            case UnExpr ue:
+                return getUnOp(ue.op) + transpileExpr(ue.expr);
+            case FuncCallExpr func:
+                return "";
+            case TensorAccessExpr tae:
+                return "";
+            case TensorDefExpr tde:
+                return "";
             default:
                 return "";
         }
@@ -161,6 +204,17 @@ public class Transpiler {
         switch (bin) {
             case Binoperator.ADD:
                 return '+';    
+            default:
+                return '?';
+        }
+    }
+
+    static char getUnOp(Unaryoperator op){
+        switch (op) {
+            case Unaryoperator.NOT:
+                return '!';
+            case Unaryoperator.NEG:
+                return '-';
             default:
                 return '?';
         }
