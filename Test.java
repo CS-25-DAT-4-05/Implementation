@@ -67,7 +67,7 @@ public class Test {
      catch (Exception e) {
     e.printStackTrace();
     }
-    
+
     }
 
     public static void runTypeCheckerTest(Prog prog) {
@@ -80,6 +80,8 @@ public class Test {
     } catch (RuntimeException e) {
         System.err.println("Type checking failed: " + e.getMessage());
     }
+}
+
 }
 
 
