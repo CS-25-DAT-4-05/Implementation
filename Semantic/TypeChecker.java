@@ -88,7 +88,7 @@ public class TypeChecker {
             Type left = checkExpr(bin.left);
             Type right = checkExpr(bin.right);
             if (!sameType(left, right)) {
-                errors.add("Type mismatch in binary expression.");
+                errors.add("Type mismatch in binary expression: " + pretty(left) + " " + bin.op + " " + pretty(right));
                 return null;
             }
             return switch (bin.op) {
@@ -115,23 +115,34 @@ public class TypeChecker {
             return null;
         }
     }
+    //Beep boop, I dont know why this doesnt work????
+    private boolean sameType(Type t1, Type t2) {
+    if (t1 == null || t2 == null) return false; //Null safety
 
-    private boolean sameType(Type t1, Type t2) { //Here we check Simple and tensor types. Improvement; compare SizeParam values for stricter shape checks
+    if (t1.getClass() != t2.getClass()) return false; // Same class
 
-        if (t1 == null || t2 == null) return false;
-        if (t1.getClass() != t2.getClass()) return false;
+    //Simple types
+    if (t1 instanceof SimpleType && t2 instanceof SimpleType) {
+        SimpleType st1 = (SimpleType) t1;
+        SimpleType st2 = (SimpleType) t2;
+        return st1.type == st2.type;
+    }
 
-        if (t1 instanceof SimpleType st1 && t2 instanceof SimpleType st2) {
-            return st1.type == st2.type;
-        }
+    //Tensor types
+    if (t1 instanceof TensorType && t2 instanceof TensorType) {
+        TensorType tt1 = (TensorType) t1;
+        TensorType tt2 = (TensorType) t2;
+        return sameType(tt1.componentType, tt2.componentType) &&
+               tt1.dimensions.size() == tt2.dimensions.size();
 
-        if (t1 instanceof TensorType tt1 && t2 instanceof TensorType tt2) { //Checks tensor type and size of tensor
-            return sameType(tt1.componentType, tt2.componentType) &&
-                   tt1.dimensions.size() == tt2.dimensions.size();
-            // shape matching logic can be added here
-        }
 
-        return false;
+
+        //IMPROVEMENT: shape matching can be added here
+        
+        //Compare actual, SizeParam values (ID vs INTVAL) for stricter tensor shape matching.
+    }
+    //return false;
+
     }
 
     // Entry point: checks a full program consisting of multiple function definitions
