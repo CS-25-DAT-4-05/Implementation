@@ -18,12 +18,9 @@ class IntTensor{
 
         int access(std::vector<int> indices){
             int realIndex = indices.back();
-            std::cout << "index: " << indices.back() << std::endl;
             for(int i = indices.size() - 2;i >= 0 ;i--){
                 realIndex += indices[i]*dimensions[i+1];
-                std::cout << "dim: " << dimensions[i+1] << std::endl;
             }
-            std::cout << "real index: " << realIndex << std::endl;
             return components[realIndex];
         }
 
@@ -40,7 +37,7 @@ class IntTensor{
             IntTensor res;
             res.dimensions = dimensions;
             for(int i = 0;i < components.size();i++){
-                res.components.push_back(tensor.components[i] - components[i]);
+                res.components.push_back(components[i] - tensor.components[i]);
             }
             return res;
         }
@@ -120,3 +117,12 @@ class DoubleTensor{
 
 
 };
+
+DoubleTensor operator*(double scalar, DoubleTensor const& tensor){
+    DoubleTensor res;
+    res.dimensions = tensor.dimensions;
+    for(int i = 0;i < tensor.components.size();i++){
+        res.components.push_back(scalar * tensor.components[i]);
+    }
+    return res;
+}

@@ -39,6 +39,8 @@ public class Transpiler {
         outputFile = new File(fileName);
 
         try(FileWriter fWriter = new FileWriter(outputFile)){
+            fWriter.append("#include \"tensor.h\"");
+
             if(!(root instanceof Prog)){
                 throw new Exception("Incorrect root for abstract syntax tree");
             }
@@ -49,6 +51,20 @@ public class Transpiler {
             System.out.println(e.getMessage());
         }
 
+    }
+
+    static void transpileDef(FileWriter fileWriter,FuncDef f) throws Exception{
+        if(f == null){
+            return;
+        }
+        printFunctionHeader(fileWriter, f);
+        fileWriter.append("{\n");
+        transpileStmt(fileWriter, f.funcBody);
+        String returnExpr = transpileExpr(f.returnExpr);
+
+        fileWriter.append("return "+returnExpr + ";\n");
+        fileWriter.append("}\n");
+        transpileDef(fileWriter, f.nextFunc);
     }
 
     static void transpileStmt(FileWriter fWriter,Stmt s) throws Exception{
@@ -121,7 +137,7 @@ public class Transpiler {
                 return "("+ transpileExpr(pe.expr)+")";
             case UnExpr ue:
                 return getUnOp(ue.op) + transpileExpr(ue.expr);
-            case FuncCallExpr func:
+            case FuncCallExpr func: //Mangler at tage højde for parametriske tensorer
                 String params = "";
                 if(func.ActualParameters != null){
                     for (Expr exp : func.ActualParameters) {
@@ -142,11 +158,11 @@ public class Transpiler {
                 }
                 String indices = sb.toString();
                 return transpileExpr(tae.listExpr) + ".access({" + indices + "})";
-            case TensorDefExpr tde:
+            case TensorDefExpr tde: //Mangler type information fra typecheck 
                 ArrayList<Integer> dim = new ArrayList<>();
                 getDim(tde, dim);
                 StringBuilder sbDim = new StringBuilder("{");
-                for (int integer : dim.reversed()) {
+                for (int integer : dim) {
                     if(sbDim.length()!=1){
                         sbDim.append(",");
                     }
@@ -171,20 +187,9 @@ public class Transpiler {
         }
     }    
 
-
-    static void transpileDef(FileWriter fileWriter,FuncDef f) throws Exception{
-        printFunctionHeader(fileWriter, f);
-        fileWriter.append("{\n");
-        transpileStmt(fileWriter, f.funcBody);
-        String returnExpr = transpileExpr(f.returnExpr);
-
-        fileWriter.append("return "+returnExpr + ";\n");
-        fileWriter.append("}\n");
-        transpileDef(fileWriter, f.nextFunc);
-    }
-
     
     //#### Auxiliary functions ########################################
+    //Mangler at tage højde for parametriske tensorer
     static void printFunctionHeader(FileWriter fWriter, FuncDef f) throws Exception{
         String rtype = boltToCudaTypeConverter(f.returnType);
         String procName = f.procname;
