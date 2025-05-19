@@ -2,10 +2,12 @@ import AbstractSyntax.Expressions.*;
 
 import java.io.FileReader;
 import java.io.Reader;
-import java.lang.reflect.Type;
+//import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import javax.management.openmbean.SimpleType;
+
+//import javax.management.openmbean.SimpleType;
 
 import AbstractSyntax.Definitions.*;
 import AbstractSyntax.SizeParams.*;
@@ -23,7 +25,7 @@ import CocoR.Parser;
 public class Test {
 
 
-    public static void main(){
+    public static void main(String[] args){
         Prog root;
         FuncDef func1;
         Assign assign1;
@@ -56,9 +58,11 @@ public class Test {
         Transpiler.TranspileProg(null, root);
 
     try {
-    Reader reader = new FileReader("test.bolt"); //Works works?
-    Scanner scanner = new Scanner(reader);
-    Parser parser = new Parser(scanner);
+    //Reader reader = new FileReader("CocoR/test.bolt"); //Works works?
+    Reader reader = new FileReader("CocoR/test.bolt");
+    CocoR.Scanner scanner = new CocoR.Scanner(reader);
+    CocoR.Parser parser = new CocoR.Parser(scanner);
+
 
     Prog prog = parser.Program(); // Or parser.Parse(), if .Program() doesnt work
     //Prog prog = parser.Parse();  // Generate AST? Has to be a valid node. 
