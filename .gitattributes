@@ -1,0 +1,13 @@
+#Open a terminal in the repo and run:
+#git add --renormalize .
+#git commit -m "Normalize line endings to LF via .gitattributes"
+
+# Use LF line endings for all Java source files
+*.java text eol=lf
+
+#Normalize Coco/R grammar files
+*.atg text eol=lf
+
+# Normalize .bolt test programs.
+*.bolt text eol=lf
+
