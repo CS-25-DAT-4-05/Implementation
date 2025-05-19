@@ -16,44 +16,6 @@ public class TypeChecker {
     private final Map<String, Type> typeEnv = new HashMap<>(); //"typeEnv" is a symbol table mapping variables,     
     private final List<String> errors = new ArrayList<>(); //A list to collect redeable error messages. After checking; if empty, the program is valid. If not empty the program is invalid 
     
-    // Entry point: checks a full program consisting of multiple function definitions
-    public void check(Prog prog) {
-        FuncDef current = prog.func;
-        while (current != null) {
-            checkFunc(current);
-            current = current.nextFunc;
-        }
-
-        if (!errors.isEmpty()) {
-            for (String err : errors) {
-                System.err.println(err);
-            }
-            throw new RuntimeException("Type checking failed with " + errors.size() + " error(s).");
-        }
-    }
-
-    // Checks a function: its parameter declarations, body, and return expression
-    private void checkFunc(FuncDef func) {
-        typeEnv.clear(); // Reset environment for each function
-
-        for (Pair<Type, String> param : func.formalParams) {
-            String name = param.snd;
-            if (typeEnv.containsKey(name)) {
-                errors.add("Duplicate parameter name: " + name + " in function " + func.procname);
-            } else {
-                typeEnv.put(name, param.fst);
-            }
-        }
-
-        checkStmt(func.funcBody);
-
-        Type returnType = checkExpr(func.returnExpr);
-        if (!sameType(func.returnType, returnType)) {
-            errors.add("Function '" + func.procname + "' has return type " + pretty(func.returnType) +
-                       ", but returns expression of type " + pretty(returnType));
-        }
-    }
-
     //This is the main function our parser/compiler will call. Input: Takes a single Stmt. Output: if errors, print and throw errors, if no errors, nothing (void)
     public void check(Stmt stmt) {
         checkStmt(stmt);
@@ -154,7 +116,8 @@ public class TypeChecker {
         }
     }
 
-    private boolean sameType(Type t1, Type t2) { //Here we check Simple and tensor types
+    private boolean sameType(Type t1, Type t2) { //Here we check Simple and tensor types. Improvement; compare SizeParam values for stricter shape checks
+
         if (t1 == null || t2 == null) return false;
         if (t1.getClass() != t2.getClass()) return false;
 
@@ -170,4 +133,54 @@ public class TypeChecker {
 
         return false;
     }
+
+    // Entry point: checks a full program consisting of multiple function definitions
+    public void check(Prog prog) {
+        FuncDef current = prog.func;
+        while (current != null) {
+            checkFunc(current);
+            current = current.nextFunc;
+        }
+
+        if (!errors.isEmpty()) {
+            for (String err : errors) {
+                System.err.println(err);
+             }
+            throw new RuntimeException("Type checking failed with " + errors.size() + " error(s).");
+        }
+    }
+
+    // Checks a function: its parameter declarations, body, and return expression
+    private void checkFunc(FuncDef func) {
+        typeEnv.clear(); // Reset environment for each function
+
+        for (Pair<Type, String> param : func.formalParams) {
+            String name = param.snd;
+            if (typeEnv.containsKey(name)) {
+                errors.add("Duplicate parameter name: " + name + " in function " + func.procname);
+            } else {
+                typeEnv.put(name, param.fst);
+            }
+    }
+
+        checkStmt(func.funcBody);
+
+        Type returnType = checkExpr(func.returnExpr);
+        if (!sameType(func.returnType, returnType)) {
+            errors.add("Function '" + func.procname + "' has return type " + pretty(func.returnType) +
+                       ", but returns expression of type " + pretty(returnType));
+        }
+    }
+
+    private String pretty(Type type) {
+    if (type instanceof SimpleType st) {
+        return st.type.name().toLowerCase();
+    } else if (type instanceof TensorType tt) {
+        return "tensor[" + pretty(tt.componentType) + ", " + tt.dimensions.size() + "D]";
+
+    } else {
+        return "unknown";
+    }
+}
+
 }

@@ -1,5 +1,7 @@
 import AbstractSyntax.Expressions.*;
 
+import java.io.FileReader;
+import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -13,6 +15,9 @@ import Transpiler.Transpiler;
 import AbstractSyntax.Program.*;
 import AbstractSyntax.Statements.*;
 import Semantic.TypeChecker;
+
+import CocoR.Scanner;
+import CocoR.Parser;
 
 
 public class Test {
@@ -50,11 +55,19 @@ public class Test {
         root = new Prog(mainFunc);
         Transpiler.TranspileProg(null, root);
 
-        Prog prog = parser.Program(); //Works with .Program no .Parse. Bolt.atg grammar
-        //Prog prog = parser.Parse();  // Generate AST? Has to be a valid 
-        runTypeCheckerTest(prog);    // Runs TestTypeChecker
+    try {
+    Reader reader = new FileReader("test.bolt"); //Works works?
+    Scanner scanner = new Scanner(reader);
+    Parser parser = new Parser(scanner);
 
-
+    Prog prog = parser.Program(); // Or parser.Parse(), if .Program() doesnt work
+    //Prog prog = parser.Parse();  // Generate AST? Has to be a valid node. 
+    runTypeCheckerTest(prog);     // Runs TestTypeChecker
+    }
+     catch (Exception e) {
+    e.printStackTrace();
+    }
+    
     }
 
     public static void runTypeCheckerTest(Prog prog) {
