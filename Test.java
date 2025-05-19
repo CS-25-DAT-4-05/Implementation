@@ -1,6 +1,9 @@
 import AbstractSyntax.Expressions.*;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+
+import javax.management.openmbean.SimpleType;
 
 import AbstractSyntax.Definitions.*;
 import AbstractSyntax.SizeParams.*;
@@ -9,6 +12,8 @@ import Lib.Pair;
 import Transpiler.Transpiler;
 import AbstractSyntax.Program.*;
 import AbstractSyntax.Statements.*;
+import Semantic.TypeChecker;
+
 
 public class Test {
 
@@ -44,5 +49,26 @@ public class Test {
 
         root = new Prog(mainFunc);
         Transpiler.TranspileProg(null, root);
+
+        Prog prog = parser.Program(); //Works with .Program no .Parse. Bolt.atg grammar
+        //Prog prog = parser.Parse();  // Generate AST? Has to be a valid 
+        runTypeCheckerTest(prog);    // Runs TestTypeChecker
+
+
+    }
+
+    public static void runTypeCheckerTest(Prog prog) {
+
+    try {
+        TypeChecker checker = new TypeChecker();
+        checker.check(prog);
+        
+        System.out.println("Type checking passed!");
+    } catch (RuntimeException e) {
+        System.err.println("Type checking failed: " + e.getMessage());
     }
 }
+
+
+
+
