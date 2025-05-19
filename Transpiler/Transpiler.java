@@ -24,6 +24,8 @@ public class Transpiler {
 
     static HashMap<String,Defer> deferMap;
 
+    static boolean isRoot = false;
+
     public static void TranspileProg(String fileName, Prog root){
         //Initialization
         Ftable ftable = new Ftable();
@@ -90,7 +92,8 @@ public class Transpiler {
                 transpileStmt(fWriter, wh.stmt);
                 fWriter.append("}\n");
                 break;
-            case Defer df: 
+            case Defer df:
+                
                 break;
             default:  
                 break;
@@ -98,6 +101,7 @@ public class Transpiler {
     } 
 
     static String transpileExpr(Expr e) throws Exception{
+        StringBuilder sb = new StringBuilder();
         switch (e) {
             case BinExpr be:
                 String e1 = transpileExpr(be.left);
@@ -119,7 +123,6 @@ public class Transpiler {
                 return getUnOp(ue.op) + transpileExpr(ue.expr);
             case FuncCallExpr func:
                 String params = "";
-                StringBuilder sb = new StringBuilder();
                 if(func.ActualParameters != null){
                     for (Expr exp : func.ActualParameters) {
                         if(sb.length() != 0){
@@ -127,16 +130,47 @@ public class Transpiler {
                         }
                         sb.append(transpileExpr(exp));
                     }
+                    params = sb.toString();
                 }
-                return func.name + "(" + params + ");\n";
+                return func.name + "(" + params + ")";
             case TensorAccessExpr tae:
-                return "";
+                for(Expr exp: tae.indices){
+                    if(sb.length() != 0){
+                        sb.append(',');
+                    }
+                    sb.append(transpileExpr(exp));
+                }
+                String indices = sb.toString();
+                return transpileExpr(tae.listExpr) + ".access({" + indices + "})";
             case TensorDefExpr tde:
+                ArrayList<Integer> dim = new ArrayList<>();
+                getDim(tde, dim);
+                StringBuilder sbDim = new StringBuilder("{");
+                for (int integer : dim.reversed()) {
+                    if(sbDim.length()!=1){
+                        sbDim.append(",");
+                    }
+                    sbDim.append(integer);
+                }
+                sbDim.append("}");
+                
                 return "";
             default:
                 return "";
         }
     }
+
+    static void getDim(Expr e,ArrayList<Integer> dim){
+        switch (e) {
+            case TensorDefExpr tde:
+                dim.add(tde.exprs.size());
+                getDim(tde.exprs.get(0), dim);
+                break;
+            default:
+                return;
+        }
+    }    
+
 
     static void transpileDef(FileWriter fileWriter,FuncDef f) throws Exception{
         printFunctionHeader(fileWriter, f);
@@ -201,10 +235,17 @@ public class Transpiler {
                     case DOUBLE:
                         return "double";
                     default:
-                        return "void";  
+                        throw new Exception("Unrecognized type");
                 }
             case TensorType ct:
-                return "Tensor"; //Needs to be changed
+                switch (ct.componentType.type) {
+                    case INT:
+                        return "IntTensor";
+                    case DOUBLE:
+                        return "DoubleTensor";
+                    default:
+                        throw new Exception("Unrecognized type");
+                }
             default:
                 throw new Exception("Unrecognized type");
         }
@@ -213,33 +254,33 @@ public class Transpiler {
 
     static String getBinOp(Binoperator bin) throws Exception{
         switch (bin) {
-            case Binoperator.ADD:
+            case ADD:
                 return "+";
-            case Binoperator.MINUS:
+            case MINUS:
                 return "-";
-            case Binoperator.TIMES:
+            case TIMES:
                 return "*";
-            case Binoperator.MODULO:
+            case MODULO:
                 return "%";
-            case Binoperator.EQUAL:
+            case EQUAL:
                 return "==";
-            case Binoperator.NEQUAL:
+            case NEQUAL:
                 return "!=";
-            case Binoperator.DIV:
+            case DIV:
                 return "/";
-            case Binoperator.LEQ:
+            case LEQ:
                 return "<=";
-            case Binoperator.LT:
+            case LT:
                 return "<";
-            case Binoperator.GT:
+            case GT:
                 return ">";
-            case Binoperator.GEQ:
+            case GEQ:
                 return ">=";
-            case Binoperator.OR:
+            case OR:
                 return "||";
-            case Binoperator.AND:
+            case AND:
                 return "&&";
-            case Binoperator.ELMULT:
+            case ELMULT:
                 return "<<";    
             default:
                 throw new Exception("invalid operator");
@@ -248,9 +289,9 @@ public class Transpiler {
 
     static char getUnOp(Unaryoperator op) throws Exception{
         switch (op) {
-            case Unaryoperator.NOT:
+            case NOT:
                 return '!';
-            case Unaryoperator.NEG:
+            case NEG:
                 return '-';
             default:
                 throw new Exception("invalid operator");
