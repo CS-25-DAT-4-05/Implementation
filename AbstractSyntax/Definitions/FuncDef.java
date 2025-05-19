@@ -1,36 +1,31 @@
 package AbstractSyntax.Definitions;
-import  java.util.ArrayList;
+import java.util.ArrayList;
 
 import AbstractSyntax.Statements.Stmt;
 import AbstractSyntax.Types.Type;
 import AbstractSyntax.Expressions.Expr;
 import Lib.Pair;
 
-/* Created 09-05-2025 by Nikolaj
- * 
- * 
- * 
- */
+ // func: T0 p(T1 x1, ..., Tn xn) S return e
 
 public class FuncDef {
     public Type returnType;
     public String procname;
-    public ArrayList<Pair<Type,String>> formalParams = new ArrayList<Pair<Type,String>>();
+    public ArrayList<Pair<Type, String>> formalParams;
     public Stmt funcBody;
     public Expr returnExpr;
-    public FuncDef nextFunc;
+    public FuncDef nextFunc;  // chaining function definitions
 
-    public FuncDef(Type returnType,String procname,ArrayList<Pair<Type,String>> formalParams,Stmt funcBody,Expr returnExpr,FuncDef nextFunc){
-        this.returnExpr = returnExpr;
+    public FuncDef(Type returnType, String procname, ArrayList<Pair<Type, String>> formalParams,
+                   Stmt funcBody, Expr returnExpr, FuncDef nextFunc) {
         this.returnType = returnType;
         this.procname = procname;
-        if(!(formalParams == null)){
-            for (Pair<Type,String> param : formalParams) {
-                this.formalParams.add(param);
-            }
+        this.formalParams = new ArrayList<>();
+        if (formalParams != null) {
+            this.formalParams.addAll(formalParams);
         }
         this.funcBody = funcBody;
+        this.returnExpr = returnExpr;
         this.nextFunc = nextFunc;
     }
-
 }
