@@ -4,7 +4,9 @@ echo Blah blah, project
 echo =============================
 echo Compiling Java files...
 echo =============================
-javac -cp .;CocoR *.java
+
+java -cp ".;CocoR/CocoR.jar" Test
+
 
 if %errorlevel% neq 0 (
     echo.
