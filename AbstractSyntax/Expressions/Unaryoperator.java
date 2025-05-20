@@ -6,6 +6,6 @@ package AbstractSyntax.Expressions;
  * 
  */
 
-public enum Unaryoperator{
+public enum UnaryOperator{
     NOT,NEG
 }

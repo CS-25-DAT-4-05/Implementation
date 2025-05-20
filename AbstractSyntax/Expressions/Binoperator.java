@@ -4,6 +4,6 @@ package AbstractSyntax.Expressions;
  * 
  * 
  */
-public enum Binoperator {
+public enum BinOperator {
     ADD,DIV,MINUS,TIMES,MODULO,EQUAL,NEQUAL,LEQ,GEQ,LT,GT,ELMULT,AND,OR
 }

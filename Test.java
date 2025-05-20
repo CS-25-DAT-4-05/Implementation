@@ -18,8 +18,8 @@ import AbstractSyntax.Program.*;
 import AbstractSyntax.Statements.*;
 import Semantic.TypeChecker;
 
-import CocoR.Scanner;
-import CocoR.Parser;
+import boltparser.Scanner;
+import boltparser.Parser;
 
 
 public class Test {
@@ -60,8 +60,8 @@ public class Test {
     try {
     //Reader reader = new FileReader("CocoR/test.bolt"); //Works works?
     Reader reader = new FileReader("CocoR/test.bolt");
-    CocoR.Scanner scanner = new CocoR.Scanner(reader);
-    CocoR.Parser parser = new CocoR.Parser(scanner);
+    boltparser.Scanner scanner = new boltparser.Scanner(reader);
+    boltparser.Parser parser = new boltparser.Parser(scanner);
 
 
     Prog prog = parser.Program(); // Or parser.Parse(), if .Program() doesnt work

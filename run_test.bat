@@ -1,38 +1,42 @@
 @echo off
-echo Blah blah, project. Put read me thingy maybe?
-
-echo ================================
+echo ===============================
 echo Compiling Java files...
-echo ================================
+echo ===============================
 
-REM Compile all .java files across folders
+REM Compile all .java files from subfolders
 javac -cp ".;CocoR/CocoR.jar" ^
-    AbstractSyntax\Definitions\*.java ^
-    AbstractSyntax\Expressions\*.java ^
-    AbstractSyntax\Program\*.java ^
-    AbstractSyntax\SizeParams\*.java ^
-    AbstractSyntax\Statements\*.java ^
-    AbstractSyntax\Types\*.java ^
-    Lib\*.java ^
-    Transpiler\*.java ^
-    Semantic\*.java ^
-    boltparser\*.java ^
-    Test.java
+.\AbstractSyntax\Definitions\*.java ^
+.\AbstractSyntax\Expressions\*.java ^
+.\AbstractSyntax\Program\*.java ^
+.\AbstractSyntax\Statements\*.java ^
+.\AbstractSyntax\SizeParams\*.java ^
+.\AbstractSyntax\Types\*.java ^
+.\boltparser\*.java ^
+.\Semantic\*.java ^
+.\Transpiler\*.java ^
+TestTypeChecker.java
+
 
 IF %ERRORLEVEL% NEQ 0 (
-    echo Compilation failed.
-    pause
-    exit /b
+  echo Compilation failed.
+  pause
+  exit /b
 )
 
 echo Compilation successful.
-echo Running the program...
+echo ===============================
+echo Choose class to run:
+echo [1] TestTypeChecker
+set /p choice=Enter your choice (1 or 2): 
 
-echo.
-echo ===============================
-echo Running TypeChecker on test.bolt...
-echo ===============================
-java -cp ".;CocoR/CocoR.jar" Test
+if "%choice%"=="1" (
+  echo Running TestTypeChecker.java...
+  java -cp ".;CocoR/CocoR.jar" TestTypeChecker
+) else if "%choice%"=="2" (
+  REM Another file at some point maybe?
+) else (
+  echo Invalid choice. Exiting.
+)
 
 echo.
 pause
