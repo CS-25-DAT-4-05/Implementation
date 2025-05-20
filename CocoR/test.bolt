@@ -1,8 +1,17 @@
-int x := 5;
-bool y := true;
-if (x > 3) then {
-    y := false;
-}
-while (x > 0) do {
-    x := x - 1;
+func : int main(){
+
+    int x := 5;
+    bool y := true;
+
+    if (x > 3) then {
+        y := false;
+    }  
+   if (!y) then {
+      y := false;
+   }
+
+    while (x > 0) do {
+        x := -x - 1;
+    }
+    return x;
 }

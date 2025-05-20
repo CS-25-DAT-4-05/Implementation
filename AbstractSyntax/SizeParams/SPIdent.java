@@ -1,3 +1,4 @@
+
 package AbstractSyntax.SizeParams;
 
 public class SPIdent implements SizeParam {
@@ -7,3 +8,4 @@ public class SPIdent implements SizeParam {
         this.ident = identifier;
     }
 }
+
