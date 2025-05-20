@@ -246,8 +246,8 @@ class StartStates {
 public class Scanner {
 	static final char EOL = '\n';
 	static final int  eofSym = 0;
-	static final int maxT = 36;
-	static final int noSym = 36;
+	static final int maxT = 47;
+	static final int noSym = 47;
 
 
 	public Buffer buffer; // scanner buffer
@@ -273,38 +273,49 @@ public class Scanner {
 		start = new StartStates();
 		literals = new HashMap();
 		for (int i = 65; i <= 90; ++i) start.set(i, 1);
-		for (int i = 97; i <= 122; ++i) start.set(i, 1);
+		for (int i = 97; i <= 101; ++i) start.set(i, 1);
+		for (int i = 103; i <= 122; ++i) start.set(i, 1);
 		for (int i = 48; i <= 57; ++i) start.set(i, 8);
 		start.set(39, 4); 
-		start.set(59, 9); 
-		start.set(58, 10); 
-		start.set(40, 12); 
-		start.set(41, 13); 
-		start.set(123, 14); 
+		start.set(102, 33); 
+		start.set(40, 10); 
+		start.set(44, 11); 
+		start.set(41, 12); 
+		start.set(123, 13); 
+		start.set(59, 14); 
 		start.set(125, 15); 
-		start.set(124, 16); 
-		start.set(38, 18); 
-		start.set(61, 20); 
-		start.set(33, 30); 
-		start.set(60, 31); 
-		start.set(62, 32); 
-		start.set(43, 25); 
-		start.set(45, 26); 
-		start.set(42, 27); 
-		start.set(47, 28); 
-		start.set(37, 29); 
+		start.set(61, 34); 
+		start.set(91, 16); 
+		start.set(93, 17); 
+		start.set(124, 18); 
+		start.set(38, 20); 
+		start.set(33, 35); 
+		start.set(60, 36); 
+		start.set(62, 37); 
+		start.set(43, 26); 
+		start.set(45, 27); 
+		start.set(42, 28); 
+		start.set(46, 29); 
+		start.set(47, 31); 
+		start.set(37, 32); 
 		start.set(Buffer.EOF, -1);
-		literals.put("double", 7);
-		literals.put("int", 8);
-		literals.put("char", 9);
-		literals.put("bool", 10);
-		literals.put("while", 11);
-		literals.put("do", 14);
-		literals.put("if", 17);
-		literals.put("then", 18);
-		literals.put("else", 19);
-		literals.put("true", 34);
-		literals.put("false", 35);
+		literals.put("return", 10);
+		literals.put("defer", 16);
+		literals.put("double", 17);
+		literals.put("int", 18);
+		literals.put("char", 19);
+		literals.put("bool", 20);
+		literals.put("void", 21);
+		literals.put("vector", 22);
+		literals.put("matrix", 23);
+		literals.put("tensor", 24);
+		literals.put("while", 25);
+		literals.put("do", 26);
+		literals.put("if", 27);
+		literals.put("then", 28);
+		literals.put("else", 29);
+		literals.put("true", 45);
+		literals.put("false", 46);
 
 	}
 	
@@ -472,61 +483,90 @@ public class Scanner {
 				case 9:
 					{t.kind = 5; break loop;}
 				case 10:
-					if (ch == '=') {AddCh(); state = 11; break;}
-					else {state = 0; break;}
-				case 11:
 					{t.kind = 6; break loop;}
+				case 11:
+					{t.kind = 7; break loop;}
 				case 12:
-					{t.kind = 12; break loop;}
+					{t.kind = 8; break loop;}
 				case 13:
-					{t.kind = 13; break loop;}
+					{t.kind = 9; break loop;}
 				case 14:
-					{t.kind = 15; break loop;}
+					{t.kind = 11; break loop;}
 				case 15:
-					{t.kind = 16; break loop;}
+					{t.kind = 12; break loop;}
 				case 16:
-					if (ch == '|') {AddCh(); state = 17; break;}
-					else {state = 0; break;}
+					{t.kind = 14; break loop;}
 				case 17:
-					{t.kind = 20; break loop;}
+					{t.kind = 15; break loop;}
 				case 18:
-					if (ch == '&') {AddCh(); state = 19; break;}
+					if (ch == '|') {AddCh(); state = 19; break;}
 					else {state = 0; break;}
 				case 19:
-					{t.kind = 21; break loop;}
+					{t.kind = 30; break loop;}
 				case 20:
-					if (ch == '=') {AddCh(); state = 21; break;}
+					if (ch == '&') {AddCh(); state = 21; break;}
 					else {state = 0; break;}
 				case 21:
-					{t.kind = 22; break loop;}
-				case 22:
-					{t.kind = 23; break loop;}
-				case 23:
-					{t.kind = 25; break loop;}
-				case 24:
-					{t.kind = 27; break loop;}
-				case 25:
-					{t.kind = 28; break loop;}
-				case 26:
-					{t.kind = 29; break loop;}
-				case 27:
-					{t.kind = 30; break loop;}
-				case 28:
 					{t.kind = 31; break loop;}
-				case 29:
+				case 22:
 					{t.kind = 32; break loop;}
+				case 23:
+					{t.kind = 33; break loop;}
+				case 24:
+					{t.kind = 35; break loop;}
+				case 25:
+					{t.kind = 37; break loop;}
+				case 26:
+					{t.kind = 38; break loop;}
+				case 27:
+					{t.kind = 39; break loop;}
+				case 28:
+					{t.kind = 40; break loop;}
+				case 29:
+					if (ch == '*') {AddCh(); state = 30; break;}
+					else {state = 0; break;}
 				case 30:
-					recEnd = pos; recKind = 33;
-					if (ch == '=') {AddCh(); state = 22; break;}
-					else {t.kind = 33; break loop;}
+					{t.kind = 41; break loop;}
 				case 31:
-					recEnd = pos; recKind = 24;
-					if (ch == '=') {AddCh(); state = 23; break;}
-					else {t.kind = 24; break loop;}
+					{t.kind = 42; break loop;}
 				case 32:
-					recEnd = pos; recKind = 26;
+					{t.kind = 43; break loop;}
+				case 33:
+					recEnd = pos; recKind = 1;
+					if (ch >= '0' && ch <= '9' || ch >= 'A' && ch <= 'Z' || ch == '_' || ch >= 'a' && ch <= 't' || ch >= 'v' && ch <= 'z') {AddCh(); state = 1; break;}
+					else if (ch == 'u') {AddCh(); state = 38; break;}
+					else {t.kind = 1; t.val = new String(tval, 0, tlen); CheckLiteral(); return t;}
+				case 34:
+					recEnd = pos; recKind = 13;
+					if (ch == '=') {AddCh(); state = 22; break;}
+					else {t.kind = 13; break loop;}
+				case 35:
+					recEnd = pos; recKind = 44;
+					if (ch == '=') {AddCh(); state = 23; break;}
+					else {t.kind = 44; break loop;}
+				case 36:
+					recEnd = pos; recKind = 34;
 					if (ch == '=') {AddCh(); state = 24; break;}
-					else {t.kind = 26; break loop;}
+					else {t.kind = 34; break loop;}
+				case 37:
+					recEnd = pos; recKind = 36;
+					if (ch == '=') {AddCh(); state = 25; break;}
+					else {t.kind = 36; break loop;}
+				case 38:
+					recEnd = pos; recKind = 1;
+					if (ch >= '0' && ch <= '9' || ch >= 'A' && ch <= 'Z' || ch == '_' || ch >= 'a' && ch <= 'm' || ch >= 'o' && ch <= 'z') {AddCh(); state = 1; break;}
+					else if (ch == 'n') {AddCh(); state = 39; break;}
+					else {t.kind = 1; t.val = new String(tval, 0, tlen); CheckLiteral(); return t;}
+				case 39:
+					recEnd = pos; recKind = 1;
+					if (ch >= '0' && ch <= '9' || ch >= 'A' && ch <= 'Z' || ch == '_' || ch >= 'a' && ch <= 'b' || ch >= 'd' && ch <= 'z') {AddCh(); state = 1; break;}
+					else if (ch == 'c') {AddCh(); state = 40; break;}
+					else {t.kind = 1; t.val = new String(tval, 0, tlen); CheckLiteral(); return t;}
+				case 40:
+					recEnd = pos; recKind = 1;
+					if (ch >= '0' && ch <= '9' || ch >= 'A' && ch <= 'Z' || ch == '_' || ch >= 'a' && ch <= 'z') {AddCh(); state = 1; break;}
+					else if (ch == ':') {AddCh(); state = 9; break;}
+					else {t.kind = 1; t.val = new String(tval, 0, tlen); CheckLiteral(); return t;}
 
 			}
 		}

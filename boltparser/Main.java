@@ -1,25 +1,31 @@
 package boltparser;
 
-import AbstractSyntax.Statements.Stmt;
+import AbstractSyntax.Program.*;
+import java.io.File;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Working Directory: " + System.getProperty("user.dir"));
-
         if (args.length < 1) {
-            System.out.println("Usage: java boltparser.Main <filename>");
+            System.out.println("Usage: java Main <input-file>");
             return;
         }
 
-        String fileName = args[0];
-        System.out.println("Attempting to parse file: " + fileName);
+        String filename = args[0];
+        System.out.println("Working Directory: " + System.getProperty("user.dir"));
+        System.out.println("Attempting to parse file: " + filename);
 
         try {
-            // Create a scanner for the input file
-            Scanner scanner = new Scanner(fileName);
+            File file = new File(filename);
+            if (!file.exists()) {
+                System.err.println("Error: File does not exist: " + filename);
+                return;
+            }
+
+            // Create scanner
+            Scanner scanner = new Scanner(filename);
             System.out.println("Scanner created successfully");
 
-            // Create a parser using the scanner
+            // Create parser
             Parser parser = new Parser(scanner);
             System.out.println("Parser created successfully");
 
@@ -30,26 +36,21 @@ public class Main {
 
             if (parser.hasErrors()) {
                 System.out.println("Errors occurred during parsing!");
-            } else {
-                Stmt program = parser.mainNode;
-                if (program != null) {
-                    System.out.println("Parsing successful!");
-                    System.out.println("AST root: " + program.getClass().getSimpleName());
-
-                    // Use the PrettyPrinter to print the AST as code
-                    PrettyPrinter prettyPrinter = new PrettyPrinter();
-                    String prettyPrinted = prettyPrinter.print(program);
-
-                    System.out.println("\nPretty printed code:");
-                    System.out.println("-------------------");
-                    System.out.println(prettyPrinted);
-                    System.out.println("-------------------");
-                } else {
-                    System.out.println("No program was parsed. mainNode is null.");
-                }
+                return;
             }
+
+            // Print the AST
+            System.out.println("\n=== Abstract Syntax Tree - Program Structure ===\n");
+            Prog ast = parser.mainNode;  // Changed from Stmt to Prog
+            if (ast == null) {
+                System.out.println("No AST generated (empty program)");
+            } else {
+                AstPrinter printer = new AstPrinter();
+                System.out.println(printer.printProgram(ast));  // Use new method for Prog
+            }
+
         } catch (Exception e) {
-            System.out.println("Exception during parsing: " + e.getMessage());
+            System.err.println("Error during parsing: " + e.getMessage());
             e.printStackTrace();
         }
     }

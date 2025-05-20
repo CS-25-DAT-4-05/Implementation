@@ -1,17 +1,15 @@
 package AbstractSyntax.Expressions;
-/* Created 09-05-2025 by Nikolaj
- * 
- * 
- * 
- */
 import java.util.ArrayList;
 public class TensorAccessExpr implements Expr {
     public Expr listExpr;
-    public ArrayList<Expr> indices = new ArrayList<Expr>();
-    public TensorAccessExpr(Expr listExpr,ArrayList<Expr> indices){
-        for (Expr expr : indices) {
-            this.indices.add(expr);
-        }
+    public ArrayList<Expr> indices;
+
+    public TensorAccessExpr(Expr listExpr, ArrayList<Expr> indices) {
         this.listExpr = listExpr;
+        this.indices = new ArrayList<>();
+        if (indices != null) {
+            this.indices.addAll(indices);
+        }
     }
 }
+

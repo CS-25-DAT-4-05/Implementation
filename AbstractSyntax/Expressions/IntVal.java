@@ -10,5 +10,4 @@ public class IntVal implements Expr {
     public IntVal(int value){
         this.value = value;
     }
-
 }
