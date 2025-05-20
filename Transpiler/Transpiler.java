@@ -76,7 +76,7 @@ public class Transpiler {
                 fWriter.append("");
                 break;
             case Assign asgn:
-                ident = asgn.ident;
+                ident = asgn.getIdentifier();
                 expr = transpileExpr( asgn.expr);
                 fWriter.append(ident + " = " + expr + ";\n");
                 break;
@@ -139,8 +139,8 @@ public class Transpiler {
                 return getUnOp(ue.op) + transpileExpr(ue.expr);
             case FuncCallExpr func: //Mangler at tage højde for parametriske tensorer
                 String params = "";
-                if(func.ActualParameters != null){
-                    for (Expr exp : func.ActualParameters) {
+                if(func.actualParameters != null){
+                    for (Expr exp : func.actualParameters) {
                         if(sb.length() != 0){
                             sb.append(",");
                         }

@@ -25,7 +25,7 @@ import AbstractSyntax.Statements.While;
 
 //From AbstractSyntax.Expressions
 import AbstractSyntax.Expressions.BinExpr;
-import AbstractSyntax.Expressions.BinOperator;
+import AbstractSyntax.Expressions.Binoperator;
 import AbstractSyntax.Expressions.BoolVal;
 import AbstractSyntax.Expressions.CharVal;
 import AbstractSyntax.Expressions.DoubleVal;
@@ -36,7 +36,7 @@ import AbstractSyntax.Expressions.IntVal;
 import AbstractSyntax.Expressions.ParenExpr;
 import AbstractSyntax.Expressions.TensorAccessExpr;
 import AbstractSyntax.Expressions.TensorDefExpr;
-import AbstractSyntax.Expressions.UnaryOperator;
+import AbstractSyntax.Expressions.Unaryoperator;
 import AbstractSyntax.Expressions.UnExpr;
 
 //From AbstractSyntax.Types

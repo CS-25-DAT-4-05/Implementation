@@ -5,7 +5,7 @@ import java.io.Reader;
 //import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-import javax.management.openmbean.SimpleType;
+//import javax.management.openmbean.SimpleType;
 
 //import javax.management.openmbean.SimpleType;
 
@@ -57,34 +57,38 @@ public class Test {
         root = new Prog(mainFunc);
         Transpiler.TranspileProg(null, root);
 
-    try {
-    //Reader reader = new FileReader("CocoR/test.bolt"); //Works works?
-    Reader reader = new FileReader("CocoR/test.bolt");
-    boltparser.Scanner scanner = new boltparser.Scanner(reader);
-    boltparser.Parser parser = new boltparser.Parser(scanner);
+        /* Ikke forbundet med transpiler
+        try {
+        //Reader reader = new FileReader("CocoR/test.bolt"); //Works works?
+        Reader reader = new FileReader("CocoR/test.bolt");
+        boltparser.Scanner scanner = new boltparser.Scanner(reader);
+        boltparser.Parser parser = new boltparser.Parser(scanner);
 
 
-    Prog prog = parser.Program(); // Or parser.Parse(), if .Program() doesnt work
-    //Prog prog = parser.Parse();  // Generate AST? Has to be a valid node. 
-    runTypeCheckerTest(prog);     // Runs TestTypeChecker
+        Prog prog = parser.Program(); // Or parser.Parse(), if .Program() doesnt work
+        //Prog prog = parser.Parse();  // Generate AST? Has to be a valid node. 
+        runTypeCheckerTest(prog);     // Runs TestTypeChecker
+        }
+         catch (Exception e) {
+        e.printStackTrace();
+        }
+        */
+
     }
-     catch (Exception e) {
-    e.printStackTrace();
-    }
 
-    }
-
+    /* Ikke forbundet med transpiler
     public static void runTypeCheckerTest(Prog prog) {
 
-    try {
-        TypeChecker checker = new TypeChecker();
-        checker.check(prog);
-        
-        System.out.println("Type checking passed!");
-    } catch (RuntimeException e) {
-        System.err.println("Type checking failed: " + e.getMessage());
+        try {
+            TypeChecker checker = new TypeChecker();
+            checker.check(prog);
+
+            System.out.println("Type checking passed!");
+        } catch (RuntimeException e) {
+            System.err.println("Type checking failed: " + e.getMessage());
+        }
     }
-}
+    */
 
 }
 
