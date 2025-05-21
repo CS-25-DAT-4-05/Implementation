@@ -1,8 +1,27 @@
 package Semantic;
 
 import java.util.*;
+
+import javax.management.openmbean.SimpleType;
+
+//import javax.management.openmbean.SimpleType;
+
+//AST Interfaces and Classes
+import AbstractSyntax.Expressions.*;
+import AbstractSyntax.Statements.*;
+import AbstractSyntax.Types.*;
+import AbstractSyntax.Definitions.*;
+import AbstractSyntax.Programs.*;
+import AbstractSyntax.SizeParams.*;
+
 import Lib.Pair;
 
+
+//Core type interfaces
+//import AbstractSyntax.Types.SimpleTypesEnum;
+
+
+/* 
 //From AbstractSyntax.Definitions
 import AbstractSyntax.Definitions.FuncDef;
 
@@ -38,144 +57,115 @@ import AbstractSyntax.Expressions.TensorAccessExpr;
 import AbstractSyntax.Expressions.TensorDefExpr;
 import AbstractSyntax.Expressions.UnaryOperator;
 import AbstractSyntax.Expressions.UnExpr;
+*/
 
-//From AbstractSyntax.Types
-import AbstractSyntax.Types.SimpleType;
-import AbstractSyntax.Types.SimpleTypesEnum;
-import AbstractSyntax.Types.TensorType;
-import AbstractSyntax.Types.Type;
-
-//import javax.management.openmbean.SimpleType;
 
 public class TypeChecker {
-
-    // Maps variable names to their declared types (e.g., "x" -> INT)
     private final Map<String, Type> typeEnv = new HashMap<>();
-
-    // Keeps a list of error messages to report after checking
     private final List<String> errors = new ArrayList<>();
 
-    // === MAIN ENTRY POINT ===
     public void check(Stmt stmt) {
         checkStmt(stmt);
         if (!errors.isEmpty()) {
-            for (String err : errors) {
-                System.err.println(err);
-            }
-            throw new RuntimeException("Type checking failed with " + errors.size() + " error(s).");
+            for (String err : errors) System.err.println(err);
+            throw new RuntimeException("Type checking failed.");
         }
     }
 
-    // === Handles all Statement types ===
-    private void checkStmt(Stmt stmt) {
-        if (stmt instanceof Declaration decl) {
-            // Declares a new variable with its type
-            if (typeEnv.containsKey(decl.ident)) {
-                errors.add("Variable '" + decl.ident + "' already declared.");
-            } else {
-                Type exprType = checkExpr(decl.expr);
-                typeEnv.put(decl.ident, exprType);
-            }
-
-        } else if (stmt instanceof Assign assign) {
-            // Checks type match between variable and assigned expression
-            Type varType = typeEnv.get(assign.ident);
-            Type exprType = checkExpr(assign.expr);
-            if (!sameType(varType, exprType)) {
-                errors.add("Type mismatch in assignment to '" + assign.ident + "'");
-            }
-
-        } else if (stmt instanceof Comp comp) {
-            // Compound statement: check both in sequence
-            Comp compStmt = (Comp) stmt;
-            checkStmt(compStmt.first);
-            checkStmt(compStmt.second);
-
-        } else if (stmt instanceof If ifstmt) {
-            // If statement: check condition and branches
-            Type condType = checkExpr(ifstmt.cond);
-            checkStmt(ifstmt.thenstmt);
-            if (ifstmt.elsestmt != null) checkStmt(ifstmt.elsestmt);
-
-        } else if (stmt instanceof While whilestmt) {
-            // While loop: check condition and body
-            Type condType = checkExpr(whilestmt.cond);
-            checkStmt(whilestmt.body);
-
-        } else if (stmt instanceof Defer deferstmt) {
-            // Defer: check inner statement
-            checkStmt(deferstmt.inner);
-        }
-    }
-
-    // === Handles Expressions and infers their types ===
+    // ================================
+    // Expression type checking
+    // ================================
     private Type checkExpr(Expr expr) {
-        if (expr instanceof IntVal) {
-            return new SimpleType(SimpleTypesEnum.INT);
+        if (expr instanceof IntVal) return new SimpleType(SimpleTypesEnum.INT);
+        if (expr instanceof DoubleVal) return new SimpleType(SimpleTypesEnum.DOUBLE);
+        if (expr instanceof CharVal) return new SimpleType(SimpleTypesEnum.CHAR);
+        if (expr instanceof BoolVal) return new SimpleType(SimpleTypesEnum.BOOL);
 
-        } else if (expr instanceof BoolVal) {
-            return new SimpleType(SimpleTypesEnum.BOOL);
-
-        } else if (expr instanceof DoubleVal) {
-            return new SimpleType(SimpleTypesEnum.DOUBLE);
-
-        } else if (expr instanceof Ident var) {
-            // Lookup variable type from the symbol table
-            if (!typeEnv.containsKey(var.name)) {
-                errors.add("Undeclared variable '" + var.name + "'");
-                return new SimpleType(SimpleTypesEnum.INT); // Fallback type
+        if (expr instanceof Var var) {
+            if (!typeEnv.containsKey(var.ident)) {
+                errors.add("Undeclared variable '" + var.ident + "'");
+                return new SimpleType(SimpleTypesEnum.INT);
             }
-            return typeEnv.get(var.name);
+            return typeEnv.get(var.ident);
+        }
 
-        } else if (expr instanceof BinExpr bin) {
+        if (expr instanceof BinOpExpr bin) {
             Type left = checkExpr(bin.left);
             Type right = checkExpr(bin.right);
-            // Basic type compatibility check for binary operations
-            if (!sameType(left, right)) {
-                errors.add("Type mismatch in binary operation.");
-            }
-            return left; // Simplified — might depend on operator in future
-
-        } else if (expr instanceof UnExpr un) {
-            // Unary expression: return type of inner expression
-            return checkExpr(un.expr);
+            if (!left.equals(right)) errors.add("Binary op mismatch: " + left + " vs " + right);
+            return left;
         }
 
-        // Default fallback — should not reach here ideally
+        if (expr instanceof UnaryOpExpr unary) {
+            return checkExpr(unary.expr);
+        }
+
+        if (expr instanceof TensorLiteral tensor) {
+            return tensor.type;  // Assumed inferred during AST construction
+        }
+
+        if (expr instanceof TensorAccessExpr access) {
+            Type baseType = checkExpr(access.listExpr);
+
+            if (!(baseType instanceof TensorType tensorType)) {
+                errors.add("Tensor access on non-tensor type");
+                return new SimpleType(SimpleTypesEnum.INT);
+            }
+
+            if (access.indices.size() != tensorType.shape().size()) {
+                errors.add("Tensor index count mismatch");
+            }
+
+            for (Expr index : access.indices) {
+                Type indexType = checkExpr(index);
+                if (!(indexType instanceof SimpleType st) || st.type != SimpleTypesEnum.INT) {
+                    errors.add("Tensor index must be INT");
+                }
+            }
+
+            return tensorType.base();
+        }
+
+        errors.add("Unknown expression type: " + expr.getClass());
         return new SimpleType(SimpleTypesEnum.INT);
     }
 
-    // === Checks whether two types are the same ===
-    private boolean sameType(Type t1, Type t2) {
-        if (t1 == null || t2 == null) return false;
-        return t1.getClass() == t2.getClass(); // Compares actual class types
-    }
+    // ================================
+    // Statement type checking
+    // ================================
+    private void checkStmt(Stmt stmt) {
+        if (stmt instanceof Declaration decl) {
+            Type declaredType = decl.type;
+            if (typeEnv.containsKey(decl.ident)) {
+                errors.add("Variable '" + decl.ident + "' already declared");
+            } else {
+                typeEnv.put(decl.ident, declaredType);
+            }
 
-    // === Handles function declarations ===
-    /*
-    public void check(Prog prog) {
-        for (FuncDef func : prog.funcs) {
-            checkFunc(func);
-        }
-    }
-    */
-
-    // === Type checks a single function ===
-    private void checkFunc(FuncDef func) {
-        // Add parameters to symbol table
-        for (Pair<Type, String> param : func.formalParams) {
-            //typeEnv.put(param.snd, param.fst);
+            if (decl.expr != null) {
+                Type exprType = checkExpr(decl.expr);
+                if (!declaredType.equals(exprType)) {
+                    errors.add("Type mismatch in declaration: " + declaredType + " vs " + exprType);
+                }
+            }
         }
 
-        // Check return expression type
-        Type returnType = checkExpr(func.returnExpr);
-        if (!sameType(returnType, func.returnType)) {
-            errors.add("Return type mismatch in function '" + func.name + "'");
-        }
+        // Extend with If, While, Assignment, Return, etc. if needed
     }
 
-    // === Converts a type to its name for printing (used in debugging) ===
-    private String pretty(Type type) {
-        return type.getClass().getSimpleName();
+    // ================================
+    // Helper: Convert string → type
+    // ================================
+    private Type convertStringToType(String typeStr) {
+        return switch (typeStr) {
+            case "int" -> new SimpleType(SimpleTypesEnum.INT);
+            case "double" -> new SimpleType(SimpleTypesEnum.DOUBLE);
+            case "char" -> new SimpleType(SimpleTypesEnum.CHAR);
+            case "bool" -> new SimpleType(SimpleTypesEnum.BOOL);
+            default -> {
+                errors.add("Unknown type: " + typeStr);
+                yield new SimpleType(SimpleTypesEnum.INT);
+            }
+        };
     }
 }

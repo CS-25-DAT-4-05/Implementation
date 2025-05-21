@@ -1,6 +1,8 @@
 package AbstractSyntax.Types;
-import java.util.ArrayList;
 import AbstractSyntax.SizeParams.*;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import javax.management.openmbean.SimpleType;
 
 public class TensorType implements Type {
     public SimpleType componentType;
@@ -28,4 +30,9 @@ public class TensorType implements Type {
     public boolean isHigherDimensionalTensor() {
         return dimensions != null && dimensions.size() >= 3;
     }
+
+    private ArrayList<Integer> shape;
+    public ArrayList<Integer> shape() { return shape; }
+
 }
+
