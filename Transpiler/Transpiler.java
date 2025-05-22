@@ -60,7 +60,7 @@ public class Transpiler {
         printFunctionHeader(fileWriter, f);
         fileWriter.append("{\n");
         transpileStmt(fileWriter, f.funcBody);
-        String returnExpr = transpileExpr(f.returnExpr);
+        String returnExpr = transpileExpr(f.returnExpr, null);
 
         fileWriter.append("return "+returnExpr + ";\n");
         fileWriter.append("}\n");
@@ -77,13 +77,13 @@ public class Transpiler {
                 break;
             case Assign asgn:
                 ident = asgn.getIdentifier();
-                expr = transpileExpr( asgn.expr);
+                expr = transpileExpr(asgn.expr, null);
                 fWriter.append(ident + " = " + expr + ";\n");
                 break;
             case Declaration dec:
                 String type = boltToCudaTypeConverter(dec.t);
                 ident = dec.ident;
-                expr = transpileExpr(dec.expr);
+                expr = transpileExpr(dec.expr, dec.t);
                 fWriter.append(type + " " + ident + " = " + expr + ";\n");
                 transpileStmt(fWriter, dec.stmt);
                 break;
@@ -92,7 +92,7 @@ public class Transpiler {
                 transpileStmt(fWriter, cmp.stmt2);
                 break;
             case If ife:
-                cond = transpileExpr(ife.cond);
+                cond = transpileExpr(ife.cond, null);
                 fWriter.append("if(" + cond + "){\n");
                 transpileStmt(fWriter, ife.then);
                 fWriter.append("}\n");
@@ -103,7 +103,7 @@ public class Transpiler {
                 }
                 break;
             case While wh:
-                cond = transpileExpr(wh.cond);
+                cond = transpileExpr(wh.cond, null);
                 fWriter.append("while()" + cond + "){\n");
                 transpileStmt(fWriter, wh.stmt);
                 fWriter.append("}\n");
@@ -116,12 +116,12 @@ public class Transpiler {
         }
     } 
 
-    static String transpileExpr(Expr e) throws Exception{
+    static String transpileExpr(Expr e, Type optionalTypeObject) throws Exception{
         StringBuilder sb = new StringBuilder();
         switch (e) {
             case BinExpr be:
-                String e1 = transpileExpr(be.left);
-                String e2 = transpileExpr(be.left);
+                String e1 = transpileExpr(be.left, null);
+                String e2 = transpileExpr(be.left, null);
                 return e1 +  getBinOp(be.op) + e2;
             case IntVal iv:
                 return "" + iv.value;
@@ -134,9 +134,9 @@ public class Transpiler {
             case Ident id:
                 return id.name;
             case ParenExpr pe:
-                return "("+ transpileExpr(pe.expr)+")";
+                return "("+ transpileExpr(pe.expr, null)+")";
             case UnExpr ue:
-                return getUnOp(ue.op) + transpileExpr(ue.expr);
+                return getUnOp(ue.op) + transpileExpr(ue.expr, null);
             case FuncCallExpr func: //Mangler at tage højde for parametriske tensorer
                 String params = "";
                 if(func.actualParameters != null){
@@ -144,7 +144,7 @@ public class Transpiler {
                         if(sb.length() != 0){
                             sb.append(",");
                         }
-                        sb.append(transpileExpr(exp));
+                        sb.append(transpileExpr(exp, null));
                     }
                     params = sb.toString();
                 }
@@ -154,33 +154,85 @@ public class Transpiler {
                     if(sb.length() != 0){
                         sb.append(',');
                     }
-                    sb.append(transpileExpr(exp));
+                    sb.append(transpileExpr(exp, null));
                 }
                 String indices = sb.toString();
-                return transpileExpr(tae.listExpr) + ".access({" + indices + "})";
+                return transpileExpr(tae.listExpr, null) + ".access({" + indices + "})";
             case TensorDefExpr tde: //Mangler type information fra typecheck 
-                ArrayList<Integer> dim = new ArrayList<>();
-                getDim(tde, dim);
+                //Getting dimensions from the Tensor declaration (type?)
+                ArrayList<String> dimensions = new ArrayList<>();
+                getDimensions(optionalTypeObject, dimensions);
+                //sbDim = Tensor dimensions for Tensor declaration in C++
                 StringBuilder sbDim = new StringBuilder("{");
-                for (int integer : dim) {
-                    if(sbDim.length()!=1){
+                for (String dim : dimensions) {
+                    if (sbDim.length() != 1) {
                         sbDim.append(",");
                     }
-                    sbDim.append(integer);
+                    sbDim.append(dim);
                 }
                 sbDim.append("}");
+            
+                //Getting the components to be assigned to the Tensor
+                ArrayList<String> components = new ArrayList<>();
+                getTensorComponents(tde, components);
+                //sbComponents = Tensor Components for Tensor declaration in C++
+                StringBuilder sbComponents = new StringBuilder("{");
+                for (String comp : components) {
+                    if(sbComponents.length()!=1){
+                        sbComponents.append(",");
+                    }
+                    sbComponents.append(comp);
+                }
+                sbComponents.append("}");
                 
-                return "";
+                return "new " + boltToCudaTypeConverter(optionalTypeObject) + "(" + sbComponents.toString() + ", " + sbDim.toString() + ")";
             default:
                 return "";
         }
     }
 
-    static void getDim(Expr e,ArrayList<Integer> dim){
+    static void getDimensions(Type tensorTypeObj, ArrayList<String> dimensions){
+        switch (tensorTypeObj) {
+            case TensorType typeObj:
+                for (SizeParam sp : typeObj.dimensions) {
+                    dimensions.add(transpileSizeParameters(sp));
+                } 
+                break;
+        
+            default:
+                break;
+        }
+    }
+
+    static String transpileSizeParameters(SizeParam sp){
+        switch (sp) {
+            case SPIdent spIdent:
+                return spIdent.ident;
+            case SPInt spInt:
+                int value = spInt.value;
+                return Integer.toString(value);
+            default:
+                return "";
+        }
+    }
+
+    static void getTensorComponents(Expr e,ArrayList<String> components) throws Exception{
         switch (e) {
             case TensorDefExpr tde:
-                dim.add(tde.exprs.size());
-                getDim(tde.exprs.get(0), dim);
+                for (Expr expression : tde.exprs) {
+                    try {
+                        //Transpiling the expressions given as dimension parameters for the Tensor declaration
+                        String transpiledExpression = transpileExpr(expression, null);
+                        components.add(transpiledExpression);
+                    } catch (Exception ex) {
+                        System.out.println("Short description of Exception: " + ex.toString());
+                        System.out.println("Message from Exception: " + ex.getMessage());
+                        throw new Exception("[ERROR] Failed at transpiling the expressions during a tensor declaration!");
+                    }
+                    
+                }
+                //dim.add(tde.exprs.size());
+                //getDim(tde.exprs.get(0), dim);
                 break;
             default:
                 return;

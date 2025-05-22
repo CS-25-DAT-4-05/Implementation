@@ -64,9 +64,9 @@ public class Test {
         tensorDimSP.add(new SPInt(2));
         TensorType decTensorType = new TensorType(new SimpleType(SimpleTypesEnum.INT), tensorDimSP);
         ArrayList<Expr> tensorDimExpr = new ArrayList<Expr>();
+        tensorDimExpr.add(new IntVal(1));
+        tensorDimExpr.add(new IntVal(2));
         tensorDimExpr.add(new IntVal(3));
-        tensorDimExpr.add(new IntVal(2));
-        tensorDimExpr.add(new IntVal(2));
         TensorDefExpr tensorDefExpr = new TensorDefExpr(tensorDimExpr);
         Declaration mainFuncBody = new Declaration(decTensorType, "testTensor", tensorDefExpr, null);
 
