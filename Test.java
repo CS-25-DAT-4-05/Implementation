@@ -37,6 +37,7 @@ public class Test {
         IntVal zero;
         Declaration dec1;
 
+        /* Example program, see aEx.cu
         bexp = new BinExpr(new IntVal(1), new IntVal(2), Binoperator.ADD);
         zero = new IntVal(0);
         
@@ -52,9 +53,27 @@ public class Test {
 
         mainFunc = new FuncDef(new SimpleType(SimpleTypesEnum.INT), "main",null, null, zero, func1);
 
-
-
         root = new Prog(mainFunc);
+        */
+
+        zero = new IntVal(0);
+
+        ArrayList<SizeParam> tensorDimSP = new ArrayList<SizeParam>();
+        tensorDimSP.add(new SPInt(3));
+        tensorDimSP.add(new SPInt(2));
+        tensorDimSP.add(new SPInt(2));
+        TensorType decTensorType = new TensorType(new SimpleType(SimpleTypesEnum.INT), tensorDimSP);
+        ArrayList<Expr> tensorDimExpr = new ArrayList<Expr>();
+        tensorDimExpr.add(new IntVal(3));
+        tensorDimExpr.add(new IntVal(2));
+        tensorDimExpr.add(new IntVal(2));
+        TensorDefExpr tensorDefExpr = new TensorDefExpr(tensorDimExpr);
+        Declaration mainFuncBody = new Declaration(decTensorType, "testTensor", tensorDefExpr, null);
+
+        mainFunc = new FuncDef(new SimpleType(SimpleTypesEnum.INT), "main", null, mainFuncBody, zero, null);
+        
+        root = new Prog(mainFunc);
+
         Transpiler.TranspileProg(null, root);
 
         /* Ikke forbundet med transpiler

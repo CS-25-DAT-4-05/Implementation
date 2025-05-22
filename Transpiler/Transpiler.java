@@ -39,7 +39,7 @@ public class Transpiler {
         outputFile = new File(fileName);
 
         try(FileWriter fWriter = new FileWriter(outputFile)){
-            fWriter.append("#include \"tensor.h\"");
+            fWriter.append("#include \"tensor.h\"\n");
 
             if(!(root instanceof Prog)){
                 throw new Exception("Incorrect root for abstract syntax tree");
