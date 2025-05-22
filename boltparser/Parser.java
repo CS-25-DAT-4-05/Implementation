@@ -197,7 +197,7 @@ private Stmt toComp(ArrayList<Stmt> statements) {
         trace("Program produced null result or no functions");
     }
 
-   return new Prog(chainedFunctions);
+   return result;
 }
 
 
