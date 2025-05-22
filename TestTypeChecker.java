@@ -4,13 +4,14 @@
 import AbstractSyntax.Statements.Stmt;
 import Semantic.TypeChecker;
 import boltparser.ParserWrapper;
+import AbstractSyntax.Program.Prog;
 //import java.nio.file.Files;
 //import java.nio.file.Paths;
 
 public class TestTypeChecker {
     public static void  check(Prog prog) {
         try {
-            Prog prog = ParserWrapper.parse("path/to/file");
+            Prog prog = ParserWrapper.parse("Implementation/CocoR/test.bolt");
             TypeChecker checker = new TypeChecker();
             checker.check(prog);
             System.out.println("Type checking passed.");

@@ -8,8 +8,6 @@ import AbstractSyntax.Definitions.*;
 import AbstractSyntax.Program.*;
 import java.util.ArrayList;
 import java.util.Scanner;
-import AbstractSyntax.Types.SimpleType;
-
 
 //import javax.management.openmbean.SimpleType;
 
@@ -199,7 +197,7 @@ private Stmt toComp(ArrayList<Stmt> statements) {
         trace("Program produced null result or no functions");
     }
 
-    return result;
+   return new Prog(chainedFunctions);
 }
 
 

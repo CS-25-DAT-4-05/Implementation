@@ -1,5 +1,5 @@
 package Semantic;
-
+//Should 
 import AbstractSyntax.Expressions.*;
 import AbstractSyntax.Statements.*;
 import AbstractSyntax.Types.*;
@@ -17,9 +17,7 @@ public class TypeChecker {
         }
     }
 
-    // ================================
     // Expression type checking
-    // ================================
     private Type checkExpr(Expr expr) {
         if (expr instanceof IntVal) return new SimpleType(SimpleTypesEnum.INT);
         if (expr instanceof DoubleVal) return new SimpleType(SimpleTypesEnum.DOUBLE);
@@ -81,9 +79,7 @@ public class TypeChecker {
         return new SimpleType(SimpleTypesEnum.INT);
     }
 
-    // ================================
     // Statement type checking
-    // ================================
     private void checkStmt(Stmt stmt) {
         if (stmt instanceof Declaration decl) {
             Type declaredType = decl.type;
@@ -123,9 +119,7 @@ public class TypeChecker {
 
     }
 
-    // ================================
     // Helper: Convert string → type
-    // ================================
     private Type convertStringToType(String typeStr) {
         return switch (typeStr) {
             case "int" -> new SimpleType(SimpleTypesEnum.INT);
@@ -134,7 +128,7 @@ public class TypeChecker {
             case "bool" -> new SimpleType(SimpleTypesEnum.BOOL);
             default -> {
                 errors.add("Unknown type: " + typeStr);
-                yield new SimpleType(SimpleTypesEnum.INT);
+            yield new SimpleType(SimpleTypesEnum.INT);
             }
         };
     }

@@ -1,4 +1,19 @@
 @echo off
+cls
+REM ================================================
+REM Project: BOLT (GPU DSL: A High-Level Language for Simplified CUDA Programming)
+REM File: build-and-run.bat
+REM Description:
+REM   Batch script to automate:
+REM     1. Enters the sample directory
+REM     2. Deletes old .class files
+REM     3. Regenerates parser code with ANTLR
+REM     4. Compiles all Java source files
+REM     5. Runs the main ParserWrapper class
+REM Authors: Gruppe 5
+REM Date: 28/05/2025
+REM ================================================
+
 echo ===============================
 echo Cleaning up all .class files...
 echo ===============================
@@ -28,6 +43,7 @@ IF %ERRORLEVEL% NEQ 0 (
   exit /b
 )
 
+echo ===============================
 echo Compilation successful.
 echo ===============================
 echo Choose class to run:
