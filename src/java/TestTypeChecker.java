@@ -1,5 +1,3 @@
-package Implementation;
-
 import AbstractSyntax.Program.Prog;
 import AbstractSyntax.Statements.Stmt;
 
