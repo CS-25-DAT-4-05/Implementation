@@ -1,14 +1,13 @@
 package AbstractSyntax.Statements;
 import AbstractSyntax.Expressions.*;
 
-
 public class Assign implements Stmt {
     public Expr target;  // ændret fra String ident to Expr target
     public Expr expr;    // right-hand side expression
 
     // simple assignments
     public Assign(String ident, Expr expr) {
-        this.target = new Ident(ident);
+        this.target = new Ident(ident); //Need import.Ident
         this.expr = expr;
     }
 

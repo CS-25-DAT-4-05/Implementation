@@ -1,64 +1,9 @@
 package Semantic;
 
-import java.util.*;
-
-import javax.management.openmbean.SimpleType;
-
-//import javax.management.openmbean.SimpleType;
-
-//AST Interfaces and Classes
 import AbstractSyntax.Expressions.*;
 import AbstractSyntax.Statements.*;
 import AbstractSyntax.Types.*;
-import AbstractSyntax.Definitions.*;
-import AbstractSyntax.Programs.*;
-import AbstractSyntax.SizeParams.*;
-
-import Lib.Pair;
-
-
-//Core type interfaces
-//import AbstractSyntax.Types.SimpleTypesEnum;
-
-
-/* 
-//From AbstractSyntax.Definitions
-import AbstractSyntax.Definitions.FuncDef;
-
-//From AbstractSyntax.Programs
-import AbstractSyntax.Program.Prog;
-
-//From AbstractSyntax.SizeParams
-import AbstractSyntax.SizeParams.SizeParam;
-import AbstractSyntax.SizeParams.SPIdent;
-import AbstractSyntax.SizeParams.SPInt;
-
-//From AbstractSyntax.Statements 
-import AbstractSyntax.Statements.Assign;
-import AbstractSyntax.Statements.Comp;
-import AbstractSyntax.Statements.Declaration;
-import AbstractSyntax.Statements.Defer;
-import AbstractSyntax.Statements.If;
-import AbstractSyntax.Statements.Stmt;
-import AbstractSyntax.Statements.While;
-
-//From AbstractSyntax.Expressions
-import AbstractSyntax.Expressions.BinExpr;
-import AbstractSyntax.Expressions.BinOperator;
-import AbstractSyntax.Expressions.BoolVal;
-import AbstractSyntax.Expressions.CharVal;
-import AbstractSyntax.Expressions.DoubleVal;
-import AbstractSyntax.Expressions.Expr;
-import AbstractSyntax.Expressions.FuncCallExpr;
-import AbstractSyntax.Expressions.Ident;
-import AbstractSyntax.Expressions.IntVal;
-import AbstractSyntax.Expressions.ParenExpr;
-import AbstractSyntax.Expressions.TensorAccessExpr;
-import AbstractSyntax.Expressions.TensorDefExpr;
-import AbstractSyntax.Expressions.UnaryOperator;
-import AbstractSyntax.Expressions.UnExpr;
-*/
-
+import java.util.*;
 
 public class TypeChecker {
     private final Map<String, Type> typeEnv = new HashMap<>();
@@ -81,7 +26,7 @@ public class TypeChecker {
         if (expr instanceof CharVal) return new SimpleType(SimpleTypesEnum.CHAR);
         if (expr instanceof BoolVal) return new SimpleType(SimpleTypesEnum.BOOL);
 
-        if (expr instanceof Var var) {
+        if (expr instanceof Variable var) {
             if (!typeEnv.containsKey(var.ident)) {
                 errors.add("Undeclared variable '" + var.ident + "'");
                 return new SimpleType(SimpleTypesEnum.INT);
@@ -89,14 +34,14 @@ public class TypeChecker {
             return typeEnv.get(var.ident);
         }
 
-        if (expr instanceof BinOpExpr bin) {
+        if (expr instanceof BinExpr bin) {
             Type left = checkExpr(bin.left);
             Type right = checkExpr(bin.right);
             if (!left.equals(right)) errors.add("Binary op mismatch: " + left + " vs " + right);
             return left;
         }
 
-        if (expr instanceof UnaryOpExpr unary) {
+        if (expr instanceof UnExpr unary) {
             return checkExpr(unary.expr);
         }
 
@@ -118,9 +63,15 @@ public class TypeChecker {
 
             for (Expr index : access.indices) {
                 Type indexType = checkExpr(index);
-                if (!(indexType instanceof SimpleType st) || st.type != SimpleTypesEnum.INT) {
-                    errors.add("Tensor index must be INT");
-                }
+                if (!(indexType instanceof SimpleType)) {
+                    errors.add("Tensor index must be of type INT");
+            } else {
+                SimpleType st = (SimpleType) indexType;
+                if (st.type != SimpleTypesEnum.INT) {
+                errors.add("Tensor index must be of type INT");
+    }
+}
+
             }
 
             return tensorType.base();
@@ -150,7 +101,26 @@ public class TypeChecker {
             }
         }
 
-        // Extend with If, While, Assignment, Return, etc. if needed
+        
+        else if (stmt instanceof If ifstmt) {
+            Type condType = checkExpr(ifstmt.cond);
+            if (condType != new SimpleType(SimpleTypesEnum.BOOL)) {
+                errors.add("If condition must be of type BOOL");
+            }
+            checkStmt(ifstmt.then);
+            if (ifstmt.els != null) {
+                    checkStmt(ifstmt.els);
+            }
+            }
+
+        else if (stmt instanceof While whilestmt) {
+            Type condType = checkExpr(whilestmt.cond);
+            if (condType != new SimpleType(SimpleTypesEnum.BOOL)) {
+            errors.add("While condition must be of type BOOL");
+            }
+            checkStmt(whilestmt.body);
+}
+
     }
 
     // ================================

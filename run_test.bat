@@ -1,9 +1,14 @@
 @echo off
 echo ===============================
+echo Cleaning up all .class files...
+echo ===============================
+del /s /q *.class
+echo Done.
+
+echo ===============================
 echo Compiling Java files...
 echo ===============================
 
-REM Compile all .java files from subfolders
 javac -cp ".;CocoR/CocoR.jar" ^
 .\AbstractSyntax\Definitions\*.java ^
 .\AbstractSyntax\Expressions\*.java ^
@@ -14,8 +19,8 @@ javac -cp ".;CocoR/CocoR.jar" ^
 .\boltparser\*.java ^
 .\Semantic\*.java ^
 .\Transpiler\*.java ^
-TestTypeChecker.java
-
+.\Lib\*.java ^
+TestTypeChecker.java > compile_output.txt 2>&1
 
 IF %ERRORLEVEL% NEQ 0 (
   echo Compilation failed.
@@ -33,7 +38,7 @@ if "%choice%"=="1" (
   echo Running TestTypeChecker.java...
   java -cp ".;CocoR/CocoR.jar" TestTypeChecker
 ) else if "%choice%"=="2" (
-  REM Another file at some point maybe?
+  REM Reserved for future use
 ) else (
   echo Invalid choice. Exiting.
 )

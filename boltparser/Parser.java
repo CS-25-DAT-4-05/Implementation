@@ -7,6 +7,12 @@ import AbstractSyntax.SizeParams.*;
 import AbstractSyntax.Definitions.*;
 import AbstractSyntax.Program.*;
 import java.util.ArrayList;
+import java.util.Scanner;
+import AbstractSyntax.Types.SimpleType;
+
+
+//import javax.management.openmbean.SimpleType;
+
 import Lib.Pair;
 
 
@@ -156,7 +162,7 @@ private Stmt toComp(ArrayList<Stmt> statements) {
 		}
 	}
 	
-	Prog  BOLT() {
+	public Prog  BOLT() {
 		Prog  result;
 		traceRule("BOLT"); 
 		result = Program();
@@ -164,36 +170,39 @@ private Stmt toComp(ArrayList<Stmt> statements) {
 		return result;
 	}
 
-	Prog  Program() {
-		Prog  result;
-		traceRule("Program"); 
-		trace("Starting Program parsing");
-		ArrayList<FuncDef> functions = new ArrayList<>();
-		FuncDef func = null;
-		
-		while (la.kind == 5) {
-			while (!(la.kind == 0 || la.kind == 5)) {SynErr(48); Get();}
-			trace("Synchronizing before function");
-			
-			func = FunctionDefinition();
-			if (func != null) {
-			 trace("Adding function to program: " + func.procname);
-			 functions.add(func);
-			} else {
-			 trace("Null function encountered");
-			}
-			
-		}
-		trace("Finished collecting functions, count: " + functions.size());
-		// chainer function definitions
-		FuncDef chainedFunctions = chainFunctions(functions);
-		result = new Prog(chainedFunctions);
-		if (result == null || result.func == null) {
-		 trace("Program produced null result or no functions");
-		}
-		
-		return result;
-	}
+	public Prog Program() {
+    traceRule("Program");
+    trace("Starting Program parsing");
+
+    ArrayList<FuncDef> functions = new ArrayList<>();
+    FuncDef func = null;
+
+    while (la.kind == 5) {
+        while (!(la.kind == 0 || la.kind == 5)) { SynErr(48); Get(); }
+        trace("Synchronizing before function");
+
+        func = FunctionDefinition();
+        if (func != null) {
+            trace("Adding function to program: " + func.procname);
+            functions.add(func);
+        } else {
+            trace("Null function encountered");
+        }
+    }
+
+    trace("Finished collecting functions, count: " + functions.size());
+
+    FuncDef chainedFunctions = chainFunctions(functions);
+    Prog result = new Prog(chainedFunctions);
+
+    if (result == null || result.func == null) {
+        trace("Program produced null result or no functions");
+    }
+
+    return result;
+}
+
+
 
 	FuncDef  FunctionDefinition() {
 		FuncDef  result;

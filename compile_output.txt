@@ -1,0 +1,94 @@
+AbstractSyntax\Program\Prog.java:11: error: cannot find symbol
+public class Prog extends Stmt{
+                          ^
+  symbol: class Stmt
+TestTypeChecker.java:11: error: cannot find symbol
+    public static void  check(Prog prog) {
+                              ^
+  symbol:   class Prog
+  location: class TestTypeChecker
+boltparser\AstPrinter.java:146: error: cannot find symbol
+            appendLine("Type: " + printType(decl.t));
+                                                ^
+  symbol:   variable t
+  location: variable decl of type Declaration
+boltparser\AstPrinter.java:202: error: cannot find symbol
+            printStmt(whileStmt.stmt);
+                               ^
+  symbol:   variable stmt
+  location: variable whileStmt of type While
+boltparser\Main.java:29: error: incompatible types: boltparser.Scanner cannot be converted to java.util.Scanner
+            Parser parser = new Parser(scanner);
+                                       ^
+boltparser\Parser.java:125: error: cannot find symbol
+			la = scanner.Scan();
+			            ^
+  symbol:   method Scan()
+  location: variable scanner of type Scanner
+boltparser\Parser.java:919: error: cannot find symbol
+		scanner.buffer.Close();
+		       ^
+  symbol:   variable buffer
+  location: variable scanner of type Scanner
+boltparser\ParserWrapper.java:17: error: incompatible types: boltparser.Scanner cannot be converted to java.util.Scanner
+        Parser parser = new Parser(boltscanner);
+                                   ^
+boltparser\ParserWrapper.java:21: error: cannot find symbol
+        return parser.programAST; // Assuming programAST is a valid field in your parser
+                     ^
+  symbol:   variable programAST
+  location: variable parser of type Parser
+boltparser\PrettyPrinter.java:99: error: cannot find symbol
+        append(printType(decl.t));
+                             ^
+  symbol:   variable t
+  location: variable decl of type Declaration
+boltparser\PrettyPrinter.java:121: error: cannot find symbol
+        append(assign.ident);
+                     ^
+  symbol:   variable ident
+  location: variable assign of type Assign
+boltparser\PrettyPrinter.java:161: error: cannot find symbol
+        visitStmt(whileStmt.stmt);
+                           ^
+  symbol:   variable stmt
+  location: variable whileStmt of type While
+Transpiler\Transpiler.java:79: error: cannot find symbol
+                ident = asgn.ident;
+                            ^
+  symbol:   variable ident
+  location: variable asgn of type Assign
+Transpiler\Transpiler.java:84: error: cannot find symbol
+                String type = boltToCudaTypeConverter(dec.t);
+                                                         ^
+  symbol:   variable t
+  location: variable dec of type Declaration
+Transpiler\Transpiler.java:108: error: cannot find symbol
+                transpileStmt(fWriter, wh.stmt);
+                                         ^
+  symbol:   variable stmt
+  location: variable wh of type While
+Transpiler\Transpiler.java:142: error: cannot find symbol
+                if(func.ActualParameters != null){
+                       ^
+  symbol:   variable ActualParameters
+  location: variable func of type FuncCallExpr
+Transpiler\Transpiler.java:143: error: cannot find symbol
+                    for (Expr exp : func.ActualParameters) {
+                                        ^
+  symbol:   variable ActualParameters
+  location: variable func of type FuncCallExpr
+Transpiler\Transpiler.java:246: error: cannot find symbol
+                switch (ct.componentType.type) {
+                                        ^
+  symbol:   variable type
+  location: variable componentType of type Type
+TestTypeChecker.java:13: error: cannot find symbol
+            Prog prog = ParserWrapper.parse("path/to/file");
+            ^
+  symbol:   class Prog
+  location: class TestTypeChecker
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+19 errors

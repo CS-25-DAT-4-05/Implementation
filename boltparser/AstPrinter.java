@@ -350,7 +350,7 @@ public class AstPrinter {
             sb.append(printType(tensorType.componentType));
 
             // Dimensions
-            for (SizeParam dim : tensorType.dimensions) {
+             for (SizeParam dim : tensorType.getDimensions()) {
                 sb.append(", ");
                 sb.append(printSizeParam(dim));
             }

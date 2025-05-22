@@ -9,10 +9,10 @@ import AbstractSyntax.Expressions.Expr;
  */
 
 public class While implements Stmt {
-    public Stmt stmt;
+    public Stmt body;
     public Expr cond;
-    public While(Stmt stmt,Expr cond){
-        this.stmt = stmt;
+    public While(Stmt body,Expr cond){
+        this.body = body;
         this.cond = cond;
     }
 }

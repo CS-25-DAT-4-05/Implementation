@@ -8,7 +8,7 @@ import AbstractSyntax.Definitions.FuncDef;
  * A program consists of a chain of function definitions
  */
 
-public class Prog {
+public class Prog extends Stmt{
     public FuncDef func;  // First function in the chain
 
     public Prog(FuncDef func) {
